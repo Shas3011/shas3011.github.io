@@ -77,7 +77,7 @@ considering the modern Large Language Model sizes
 
 ![Generative language models and the future of AI - BPI - The
 destination for everything process
-related](media/image1.png){width="7.280302930883639in"
+related](./sota_article_media/media/image1.png){width="7.280302930883639in"
 height="2.98125in"}
 
 Lets take GPT-3 for example, GPT-3 has 175B parameters. Suppose even if
@@ -107,7 +107,7 @@ layers to first extract the features and then using those for as inputs
 and training the later layers
 
 ![Fine-tuning with Keras and Deep Learning -
-PyImageSearch](media/image2.png){width="5.060605861767279in"
+PyImageSearch](./sota_article_media/media/image2.png){width="5.060605861767279in"
 height="4.099537401574803in"}
 
 This helps us to leverage the knowledge already learned by the
@@ -157,17 +157,20 @@ task with less computational resources and lower memory requirements.\
 \
 Below is an example of adapter layers, inserted in transformer blocks
 
-![Refer to caption](media/image3.png){width="2.611111111111111in"
+![Refer to
+caption](./sota_article_media/media/image3.png){width="2.611111111111111in"
 height="3.9166666666666665in"}![Refer to
-caption](media/image4.png){width="2.525in" height="3.7875in"}
+caption](./sota_article_media/media/image4.png){width="2.525in"
+height="3.7875in"}
 
 Here are the results of the adapter layer approach taken from the
 original paper, for all the metrics below the higher the metric , the
 better
 
-![Refer to caption](media/image5.png){width="3.1245691163604548in"
+![Refer to
+caption](./sota_article_media/media/image5.png){width="3.1245691163604548in"
 height="2.0733311461067365in"}![Refer to
-caption](media/image6.png){width="3.091666666666667in"
+caption](./sota_article_media/media/image6.png){width="3.091666666666667in"
 height="2.053472222222222in"}
 
 With Adapter Fine tuning we can achieve the results of full fine tuning
@@ -185,7 +188,8 @@ However there are still some glaring problems
     > This can be a crucial factor when deploying models in real-time
     > applications where low latency is of utmost importance
 
-> ![Refer to caption](media/image7.png){width="6.268055555555556in"
+> ![Refer to
+> caption](./sota_article_media/media/image7.png){width="6.268055555555556in"
 > height="3.4506944444444443in"}Above figure shows Percentage slow-down
 > of inference latency compared to the no-adapter baseline. The top row
 > shows the result for AdapterH and the bottom row AdapterL.\
@@ -226,7 +230,8 @@ completely untouched during the transfer learning training process and
 hence is completely unaware of the existence of the LORA Module. Hope
 you got the Secret angel metaphor
 
-![Refer to caption](media/image8.png){width="2.566666666666667in"
+![Refer to
+caption](./sota_article_media/media/image8.png){width="2.566666666666667in"
 height="2.2324890638670167in"}
 
 In the above figure X is the input, the blue box is the pretrained base
@@ -246,7 +251,7 @@ original model baseline. Here is the equation btw: Wnew = W old + AB
 2.Ground Breaking Performance: LORA results in equal or even better
 performance compare to the Full Finetuning . Also beating other
 approaches to transfer learning\
-![](media/image9.png){width="6.903327865266841in"
+![](./sota_article_media/media/image9.png){width="6.903327865266841in"
 height="3.386363735783027in"}\
 Visualized above is BLEU score obtained via different Transfer learning
 methods. The higher the better
@@ -302,7 +307,7 @@ English quotes dataset available in Hugging face for 300 steps
 
 The LORA fine-tuning method demonstrated significant improvements in
 performance and memory efficiency compared to normal fine-tuning:
-![](media/image10.png){width="7.124116360454943in"
+![](./sota_article_media/media/image10.png){width="7.124116360454943in"
 height="3.5819444444444444in"}
 
 -   Training Loss: LORA fine-tuning resulted in a 42.9% reduction in
@@ -320,7 +325,7 @@ height="3.5819444444444444in"}
 -   VRAM Usage: LORA fine-tuning consumed 57.6% less VRAM than normal
     fine-tuning, making it more memory-efficient.
 
-![](media/image11.png){width="7.268055555555556in"
+![](./sota_article_media/media/image11.png){width="7.268055555555556in"
 height="4.8069444444444445in"}
 
 LORA fine-tuning offers significant performance improvements over
@@ -333,14 +338,14 @@ language models.
 your self and test the various parameters***
 
 Our results finetuning OPT 1.3B on A100 40Gb on QBlocks.cloud\
-![](media/image12.png){width="4.901514654418198in"
+![](./sota_article_media/media/image12.png){width="4.901514654418198in"
 height="2.9650218722659667in"}
 
-![](media/image13.png){width="5.053030402449694in"
+![](./sota_article_media/media/image13.png){width="5.053030402449694in"
 height="2.2678740157480317in"}
 
-![](media/image14.png){width="4.7424004811898515in"
-height="2.6060608048993874in"}![](media/image15.png){width="5.374828302712161in"
+![](./sota_article_media/media/image14.png){width="4.7424004811898515in"
+height="2.6060608048993874in"}![](./sota_article_media/media/image15.png){width="5.374828302712161in"
 height="2.3712128171478564in"}
 
 **16Bit LoRA Adapter Tuning with r=4 and alpha=32 on OPT1.3B\
@@ -359,17 +364,17 @@ We will share a detailed notebook regarding this as well
 
 1.  Import LoraConfig and get\_peft\_model from peft package. If peft is
     not installed it can be installed with "pip install peft"\
-    ![](media/image16.png){width="3.8939391951006126in"
+    ![](./sota_article_media/media/image16.png){width="3.8939391951006126in"
     height="0.4138484251968504in"}
 
 2.  Configure the LORA hyperparameters with LoraConfig
 
-![](media/image17.png){width="2.6439391951006126in"
+![](./sota_article_media/media/image17.png){width="2.6439391951006126in"
 height="1.2011800087489064in"}
 
 3.  Create the lora model with get\_peft\_model
 
-![](media/image18.png){width="2.4621216097987753in"
+![](./sota_article_media/media/image18.png){width="2.4621216097987753in"
 height="0.22252405949256343in"}
 
 That is all. Now you can train the model as usual
