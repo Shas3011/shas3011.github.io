@@ -1,0 +1,440 @@
+---
+title: 'State of The Art Fine Tuning: A Comprehensive Overview'
+---
+
+**Intro**
+
+AI and Machine Learning has made significant strides in the recent
+years. From celebrating a classifier being able to differentiate between
+cats and dogs. To now the goliath ChatGPT having the capability of
+replacing entire industries we really have come a long way.
+
+An unquestionable component of this rise is our understanding and
+ability to use Transfer Learning. Where we can leverage the knowledge, a
+model has already gained on let's say Task A to other downstream tasks
+Task B, Task C.
+
+In this Article We understand the State-of-the-art methods for transfer
+Learning, We will begin by covering the traditional finetuning methods,
+understanding its practical problems and slowly build up to the State of
+the art method for finetuning today LoRA!
+
+by the end of this article you will be aware of the state of the art
+methods for finetuning models and be well equipped to implement them in
+your Projects .
+
+**Why Transfer Learning:**
+
+Suppose you want to build a model that will classify if an email is spam
+or not . Your all excited but unfortunately only have 50 emails for
+data. And when you try to train a model on top of this you find that it
+performs horribly
+
+And you cannot blame the model as well, after all in a mere 50 emails,
+you are expecting it to learn the English language, learning the nuances
+at play , understand what goes in a email, what is spam what is not .
+and so much more
+
+So now that we have realised that the model is performing very poorly ,
+we can turn to transfer learning as a solution. With transfer learning,
+we can leverage the knowledge already learned by a pre-trained model on
+a similar task or domain to improve the performance on our specific
+task.
+
+Continuing with our email spam classification example, let\'s say we
+have access to a pre-trained model that has already been trained on a
+large corpus of email data. We can use this pre-trained model as a
+starting point and fine-tune it on our limited 50 email dataset for spam
+classification. By doing so, we can leverage the knowledge already
+learned by the pre-trained model to improve the performance on our
+specific task, even with limited data.
+
+This saves us the time and resources needed to train a model from
+scratch, especially when we have limited data. By adapting the
+pre-trained model to our specific task, we can achieve better
+performance even with limited data
+
+That's all good but how do we go about it
+
+**Traditional Methods:**
+
+**Full Finetuning :**
+
+The first method is to initialize the new model weights from the
+pre-trained model weights and train it entirely
+
+This way we are not starting with random weights from scratch but rather
+from a good baseline
+
+This approach is useful when we have already good data for our
+downstream task, but if our downstream task has less data . this might
+lead the model to forgetting its previous knowledge\
+.This is known as Catastrophic Forgetting
+
+Another huge problem is that here need to train all the parameters in
+the model, and this is a herculean task on its own especially
+considering the modern Large Language Model sizes
+
+![Generative language models and the future of AI - BPI - The
+destination for everything process
+related](media/image1.png){width="7.280302930883639in"
+height="2.98125in"}
+
+Lets take GPT-3 for example, GPT-3 has 175B parameters. Suppose even if
+we load each model parameter in 16 bits. We will 350GB of data just to
+store the model , and we are just getting started. To store the
+gradients, intermediate activations during training. we can easily
+multiply the above requirement by 4-5x ... Yes your reading it right ,
+to train GPT3 we would need 1.4 TB of memory .
+
+Now that is a lot , even if we used a state of the art GPU like Nvidia
+A100 with 80Gb of memory . We would still need to rent \~18 of those to
+run our training.
+
+Even if were to use a super cost effective platform like QBlocks that
+would still cost us a lot
+
+\[ An image highlighting the cost difference b/w Qblocks and other Cloud
+platforms\]
+
+An alternative approach to full fine tuning is
+
+**Top Layers Fine Tuning:**
+
+Here we will freeze the earlier layers of the model and train the later
+top layers only, this is practically implemented by using the earlier
+layers to first extract the features and then using those for as inputs
+and training the later layers
+
+![Fine-tuning with Keras and Deep Learning -
+PyImageSearch](media/image2.png){width="5.060605861767279in"
+height="4.099537401574803in"}
+
+This helps us to leverage the knowledge already learned by the
+pre-trained model while preventing the model from forgetting its
+previous knowledge. Hence helpful in low data scenarios
+
+This also has the benefit of being faster and more efficient as we are
+training only a fraction of the parameters. And hence also has much
+lower memory requirements.
+
+But the problem over here is that partial fine tuning really struggles
+to match the performance of full fine tuning when the data is available.
+
+Also, in today's production level scenario world a common work flow is
+to update the pre trained model every ones in a while lets say 3 months.
+But in this situation we would need to once again fully retrain the
+fine-tuned model to utilize the new gains of the pre trained model.
+
+Moreover, when it comes to storing and deploying fine-tuned models for
+individual downstream tasks, the costs can escalate quickly. This is
+primarily because the size of the fine-tuned models remains similar to
+that of the original pre-trained model, leading to substantial storage
+and deployment expenses.
+
+To solve these problems the research community has come up with some
+PeFT approaches, PeFT Standing for
+
+**Parameter Efficient Fine-Tuning Methods:\
+**\
+Parameter-Efficient Fine-tuning (PEFT) approaches focus on fine-tuning a
+limited number of additional model parameters while keeping the majority
+of the pre-trained LLMs (Large Language Models) parameters fixed. This
+significantly reduces the computational and storage expenses associated
+with fine-tuning.
+
+Additionally since the original model parameters are un-touched the
+model can avoid catastrophic forgetting. AKA it\
+**\
+Adapter Layers FineTuning**
+
+One such approach to PEFT is the concept of Adapter Layers Fine Tuning.
+Adapter layers are small, lightweight modules inserted between the
+pre-trained layers of a model. During fine-tuning, only the weights of
+these adapter layers are updated, while the weights of the pre-trained
+model are kept fixed. This allows us to adapt the model to the target
+task with less computational resources and lower memory requirements.\
+\
+Below is an example of adapter layers, inserted in transformer blocks
+
+![Refer to caption](media/image3.png){width="2.611111111111111in"
+height="3.9166666666666665in"}![Refer to
+caption](media/image4.png){width="2.525in" height="3.7875in"}
+
+Here are the results of the adapter layer approach taken from the
+original paper, for all the metrics below the higher the metric , the
+better
+
+![Refer to caption](media/image5.png){width="3.1245691163604548in"
+height="2.0733311461067365in"}![Refer to
+caption](media/image6.png){width="3.091666666666667in"
+height="2.053472222222222in"}
+
+With Adapter Fine tuning we can achieve the results of full fine tuning
+while working with a fraction of the models parameters .\
+And not only that since the original models parameters are untouched we
+have also prevented the issue of catastrophic forgetting
+
+However there are still some glaring problems
+
+1.  Adapter Layers introduce a bottleneck in inference Latency compared
+    > to the baseline model.\
+    > This cannot be solved by simply adding more parallel compute
+    > hardware. As the adapter layers work in a fundamentally sequential
+    > manner\
+    > This can be a crucial factor when deploying models in real-time
+    > applications where low latency is of utmost importance
+
+> ![Refer to caption](media/image7.png){width="6.268055555555556in"
+> height="3.4506944444444443in"}Above figure shows Percentage slow-down
+> of inference latency compared to the no-adapter baseline. The top row
+> shows the result for AdapterH and the bottom row AdapterL.\
+> AdapterH and AdapterL are two SOTA approaches for inserting Adapter
+> layers.\
+> We can see that the slowdown can be high as 30% in
+> short-sequence-length scenarios
+
+2\. Moreover, in practical scenarios with low trainable parameters, the
+adapter layer approach fails to match the performance of full
+fine-tuning baselines. As a result, there is often a trade-off between
+efficiency and model quality\
+\
+**Meet LORA**:
+
+LORA, which stands for LOw Rank Adaptation, is a ground-breaking method
+for fine-tuning large language models, addressing the previous mentioned
+limitations of adapter layers.
+
+The key idea behind LORA is to decompose the fine-tuning parameters into
+a product of low-rank matrices, effectively reducing the number of
+parameters to be learned.
+
+LORA introduces an additional Layers that is processed parallelly with
+our pre-trained model, and final the output from the pretrained model
+and from the LORA module is added to get the final output.\
+\
+The detailed math behind LORA is beyond the scope of this article but to
+still give a practical understanding\
+\
+Think of the LORA module as a secret angel helping our pretrained base
+model to accomplish a goal. The pre-trained model works as usual and
+outputs a value, then our LORA module changes the final output to adapt
+it to the secondary task.\
+\
+The key thing to note here is that pre-trained base model parameters are
+completely untouched during the transfer learning training process and
+hence is completely unaware of the existence of the LORA Module. Hope
+you got the Secret angel metaphor
+
+![Refer to caption](media/image8.png){width="2.566666666666667in"
+height="2.2324890638670167in"}
+
+In the above figure X is the input, the blue box is the pretrained base
+line model while the orange ones are our LORA modules. At the end the
+addition icon indicates how both the outputs from the baseline model and
+LORA is added to get the final output
+
+**Here are the Ground Breaking advantages of LORA**\
+\
+1. No Speed Bottlenecks: The Lora Model can be computed in parallel with
+the base model , hence no additional bottle neck Is added. Also Due to
+simple nature of LORA we can essentially add the LORA module parameters
+with original base model parameters to create one single model during
+inference, essentially leading to 0 inference latency compared to the
+original model baseline. Here is the equation btw: Wnew = W old + AB
+
+2.Ground Breaking Performance: LORA results in equal or even better
+performance compare to the Full Finetuning . Also beating other
+approaches to transfer learning\
+![](media/image9.png){width="6.903327865266841in"
+height="3.386363735783027in"}\
+Visualized above is BLEU score obtained via different Transfer learning
+methods. The higher the better
+
+3\. Swappable Lora Models for different tasks: Remember the Lora model
+is like a secret angel helping our base model. we can just keep swapping
+the LORA models and now we would be able to perform other downstream
+tasks just by swapping the secret angel, oops I meant the LORA model.
+
+May be one lora model for classifying emails, one Lora model for
+generating poems etc\
+\
+Also Most LORA model checkpoints are very small. For Example We can
+build a chatgpt alternative using LORA with the LORA model checkpoint
+\<20mb. In comparison with traditional fine tuning the entire model
+needs to be saved so for GPT-3 that would be 350 gb. That's a 10,000x
+difference in size\
+\
+4.Swappable Base Models: Again since the LORA model and Base model work
+more or less independently. Supposing we have an update to our base
+model after 3 months maybe it was trained on additional data. With lora,
+we can just swap the base model and it will work fine.\
+With a traditional finetuning approach we would need to completely re-
+run the training process to use the new gains.
+
+5\. Low VRAM usage : Since we do not need to store the gradients and the
+mid way activations for the frozen base model . we can save hugely on
+the VRAM requirements.\
+The original authors were able to bring down the training VRAM
+requirements for GPT-3 175B from 1.2 TB to 350Gb\
+Also since no direct training is done on the base model, it can be
+loaded with lower precision like 8 bit and still work fine.\
+We were able to bring down the VRAM requirement for training OPT-1.3B
+from \~ 40 GB to under 8 GB\
+Since OpenAI is not so Open any more there is no way to test it. But we
+should also be able to bring down the 350GB VRAM requirement further
+down to 175 GB for 8 bit precision and and under 90 GB for 4bit
+precision .\
+This greatly reduces the cost for us, we should be able to fine tune GPT
+-3 with just around 3 A100 GPUS. This is a big difference from the \~ 18
+gpus we had derived before.
+
+6.Speed up during training: Since we are only updating the LORA model
+parameters, we will be able to further increase the training speed
+significantly compared to traditional approaches.\
+In our testing we were able to double the training steps per second from
+5.5 to 10.8 while using 50% less GPU
+
+**Cost Improvements** :
+
+To test the practical implications , we finetuned the same LLM over the
+English quotes dataset available in Hugging face for 300 steps
+
+The LORA fine-tuning method demonstrated significant improvements in
+performance and memory efficiency compared to normal fine-tuning:
+![](media/image10.png){width="7.124116360454943in"
+height="3.5819444444444444in"}
+
+-   Training Loss: LORA fine-tuning resulted in a 42.9% reduction in
+    training loss compared to normal fine-tuning.
+
+-   Training Runtime: LORA fine-tuning was completed in nearly half the
+    time, showing a 49.0% reduction in runtime.
+
+-   Training Samples per Second: LORA fine-tuning achieved a 96.1%
+    increase in the number of training samples processed per second.
+
+-   Training Steps per Second: LORA fine-tuning doubled the number of
+    training steps per second, with a 95.9% increase.
+
+-   VRAM Usage: LORA fine-tuning consumed 57.6% less VRAM than normal
+    fine-tuning, making it more memory-efficient.
+
+![](media/image11.png){width="7.268055555555556in"
+height="4.8069444444444445in"}
+
+LORA fine-tuning offers significant performance improvements over
+traditional fine-tuning methods. The reduced training loss, faster
+runtime, and increased training samples and steps per second make LORA
+an efficient and cost-effective alternative for fine-tuning large
+language models.
+
+***We will also be sharing a notebook on which you can run the model
+your self and test the various parameters***
+
+Our results finetuning OPT 1.3B on A100 40Gb on QBlocks.cloud\
+![](media/image12.png){width="4.901514654418198in"
+height="2.9650218722659667in"}
+
+![](media/image13.png){width="5.053030402449694in"
+height="2.2678740157480317in"}
+
+![](media/image14.png){width="4.7424004811898515in"
+height="2.6060608048993874in"}![](media/image15.png){width="5.374828302712161in"
+height="2.3712128171478564in"}
+
+**16Bit LoRA Adapter Tuning with r=4 and alpha=32 on OPT1.3B\
+**Please note that the batch size of the LORA model could be increased
+more. But for testing purpose everything has been kept same
+
+**How to implement Lora Fine tuning for our project:\
+\
+**Thanks to the PEFT package by the hugging face team implementing LORA
+is very simple.\
+You will load and train the base model as you normally do for any other
+fine tuning task. Only difference is that you need to configure the PEFT
+model on top of it . it can be done very simply
+
+We will share a detailed notebook regarding this as well
+
+1.  Import LoraConfig and get\_peft\_model from peft package. If peft is
+    not installed it can be installed with "pip install peft"\
+    ![](media/image16.png){width="3.8939391951006126in"
+    height="0.4138484251968504in"}
+
+2.  Configure the LORA hyperparameters with LoraConfig
+
+![](media/image17.png){width="2.6439391951006126in"
+height="1.2011800087489064in"}
+
+3.  Create the lora model with get\_peft\_model
+
+![](media/image18.png){width="2.4621216097987753in"
+height="0.22252405949256343in"}
+
+That is all. Now you can train the model as usual
+
+**A note on LORA Config parameters**
+
+The LoraConfig object is used to configure the LORA fine-tuning
+process.. Let\'s quickly go through each parameter and discuss their
+significance:
+
+1.  **r** (int): The rank parameter, which determines the compression
+    ratio for the low-rank approximation. A smaller **r** results in
+    higher compression and lower memory usage, but at the cost of
+    potential performance degradation. The ideal value of **r** depends
+    on the trade-off between memory efficiency and model performance.
+    Commonly used values are 2, 4, or 8.
+
+2.  **lora\_alpha** (int): The layer-wise learning rate scaling factor.
+    This parameter controls the learning rate scaling for each layer in
+    the model. Typical values for **lora\_alpha** are between 16 and 64,
+    with 32 being a good starting point.
+
+3.  **target\_modules** (list of str): A list of module names to apply
+    LORA fine-tuning. A good baseline for this is simply applying LORA
+    over the query and value projection params in a transformer model.
+
+4.  **lora\_dropout** (float): The dropout rate for LORA layers. Helps
+    deal with overfitting
+
+5.  **bias** (str): The bias parameter controls the addition of bias
+    terms in the low-rank approximation. It can be set to \"none\" (no
+    bias), \"learnable\" (learnable bias), or \"static\" (fixed bias
+    based on pre-training data)..
+
+6.  **task\_type** (str): The type of task for which the model is being
+    fine-tuned. Possible values include \"CAUSAL\_LM\" (causal language
+    modelling), \"MASKED\_LM\" (masked language modelling). We would
+    suggest reading the detailed documentation regards to this
+
+**\
+Conclusion:**
+
+In conclusion, transfer learning has revolutionized the way we fine-tune
+large language models, allowing us to leverage pre-trained models to
+adapt to specific tasks efficiently. Traditional methods like full
+fine-tuning and top layers fine-tuning face challenges in terms of
+memory requirements, risk of catastrophic forgetting, and computational
+cost. Parameter-Efficient Fine-tuning (PEFT) techniques, such as Adapter
+Layers Fine Tuning, offer improvements over these traditional methods
+but still face limitations in terms of inference latency and performance
+in practical scenarios with low trainable parameters.
+
+LOw Rank Adaptation (LORA) emerges as a groundbreaking method for
+fine-tuning large language models, addressing the limitations of
+previous approaches. LORA offers several advantages, including no speed
+bottlenecks, groundbreaking performance, swappable LORA models for
+different tasks, swappable base models, low VRAM usage, and increased
+training speed. These benefits result in significant cost improvements
+and make LORA an efficient and cost-effective alternative for
+fine-tuning large language models.
+
+We also saw how easily we can implement LORA in a straightforward thanks
+to the PEFT package by the HuggingFace Team.
+
+As AI and machine learning continue to evolve, methods like LORA will
+pave the way for more efficient and effective fine-tuning approaches,
+enabling researchers and practitioners to implement state-of-the-art
+models in their projects.
